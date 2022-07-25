@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Neurohub\Apilinkedin\Classes\LinkedinHelper;
 
 class LinkedinShareController extends Controller
 {
@@ -14,17 +15,24 @@ class LinkedinShareController extends Controller
     {
         $this->structureRequestSend = array();
     }
-    public function index($id)
+    public function getProfileId($id)
     {
-        $attivita = DB::table('attivita')->where('id', $id)->first();
-        $allegati = DB::table('allegati')->where('id_attivita', $id)->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
-        return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati]);
+        session(['attivitaId' => $id]);
+        return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
+    }
+    public function index(Request $request)
+    {
+        $attivita = DB::table('attivita')->where('id', session('attivitaId'))->first();
+        $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
+        $accessCode = LinkedinHelper::accessToken($request['code']);
+        $dataProfile = LinkedinHelper::profileId($accessCode);
+        return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati, 'profile_id' => $dataProfile['id'], 'profile_name' => $dataProfile['name']]);
     }
 
     public function store(Request $request)
     {
-        if (!$request->has('post_text') or !$request->has('link_profile') or empty($request->post_text) or empty($request->link_profile)) {
-            return redirect()->route('post.linkedin', ['id' => $request->id])->with('error', 'Non sono stati inseriti tutti i dati necessari');
+        if (!$request->has('post_text') or empty($request->post_text)) {
+            return redirect()->route('post.linkedin.getprofile', ['id' => $request->id])->with('error', 'Non sono stati inseriti tutti i dati necessari');
         }
 
         if (!auth()->check()) {
@@ -57,11 +65,10 @@ class LinkedinShareController extends Controller
             ],
             'body' => json_encode($this->structureRequestSend, true),
         ]);
-
         if (json_decode($response->getBody()->getContents(), true) == 'OK') {
             return redirect()->route('post.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
         }
-        return redirect()->route('post.linkedin', ['id' => $request->id])->with('error', 'Si è verificato un problema nella condivisione della richiesta contattare gli amministratori');
+        return redirect()->route('post.linkedin.getprofile', ['id' => $request->id])->with('error', 'Si è verificato un problema nella condivisione della richiesta contattare gli amministratori');
     }
 
     private function setRequestBeforeSend(array $request, array $user, array $allegato): void
@@ -73,7 +80,8 @@ class LinkedinShareController extends Controller
                 'username' => $user['username'],
                 'email' => $user['email'],
                 'allegato' => $allegato['allegato'],
-                'user_link' => $request['link_profile']
+                'profile_id' => $request['profile_id'],
+                'profile_name' => $request['profile_name']
             ],
             'allegato_id' => $allegato['id_allegato'],
         ];

@@ -13,6 +13,9 @@ class NeurohubApiLinkedinServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/config/apiservice.php' => config_path('apiservice.php'),
         ]);
+        $this->publishes([
+            __DIR__ . '/config/linkedinsharecontent.php' => config_path('linkedinsharecontent.php'),
+        ]);
     }
     public function register()
     {

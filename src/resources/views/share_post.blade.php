@@ -26,23 +26,17 @@
             <form action="{{ route('post.linkedin.store') }}" method="post">
                 <div class="card-body">
                     @csrf
+                    <input type="hidden" name="profile_id" value="{{ $profile_id }}">
+                    <input type="hidden" name="profile_name" value="{{ $profile_name }}">
                     <input type="hidden" name="id" value="{{ $attivita->id }}">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="nome_post">Testo del post</label>
                                     <input type="text" class="form-control" id="nome_post" name="post_text"
                                         placeholder="Nome del tuo post">
 
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="link_profile">Link del tuo profilo linkedin</label>
-                                    <input type="text" class="form-control" id="link_profile" name="link_profile"
-                                        placeholder="Inserisci il link del profilo">
-                                    <p><small>Il link è necessario per permettere a neurohub di fare il tag</small></p>
                                 </div>
                             </div>
 
