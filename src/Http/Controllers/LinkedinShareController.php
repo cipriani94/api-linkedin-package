@@ -30,33 +30,34 @@ class LinkedinShareController extends Controller
         if (!auth()->check()) {
             abort(403, 'Non sei ');
         }
-        $attivita = DB::table('attivita')
-            ->select('users.nome', 'users.cognome', 'users.email', 'allegati.id as id_allegato', 'allegati.path')
-            ->join('users', 'users.id', '=', 'attivita.id_utente')
-            ->where('attivita.id', request('id'))->first();
+        $attivita = \App\Attivita::find($request['id']);
+
         $allegato = null;
-        if (request()->has('image')) {
-            $allegato = DB::table('allegati')->where('id', request('image'))->first();
+        if ($request->has('image')) {
+            $allegato = $attivita->allegati->where('id', $request['image'])->first();
         }
         $this->setRequestBeforeSend(
             request()->all(),
             [
-                'userName' => $attivita->nome . ' ' . $attivita->cognome,
-                'email' => $attivita->email
+                'username' => $attivita->user->nome . ' ' . $attivita->user->cognome,
+                'email' => $attivita->user->email
             ],
             [
                 'id_allegato' => $allegato->id ?? 0,
-                'allegato' => is_null($allegato) ? ''  : str_replace('public', 'storage', $allegato->path)
+                'allegato' => $allegato->public_link ?? ''
             ]
         );
         $client = new Client(['base_uri' => config('apiservice.url')]);
-        $response = $client->request('POST', '/oauth/v2/accessToken', [
+        $response = $client->request('POST', '/api/createRequestShare', [
             'headers' => [
                 "Authorization" => config('apiservice.api_md5'),
                 "Content-Type"  => "application/json",
+                '_token' => csrf_token(),
+                "sourcehosting" => config('app.url')
             ],
             'body' => json_encode($this->structureRequestSend, true),
         ]);
+
         if (json_decode($response->getBody()->getContents(), true) == 'OK') {
             return redirect()->route('post.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
         }
@@ -69,12 +70,12 @@ class LinkedinShareController extends Controller
             'attivita_id' => $request['id'],
             'extra' => [
                 'name' => $request['post_text'],
-                'userName' => $user['userName'],
+                'username' => $user['username'],
                 'email' => $user['email'],
                 'allegato' => $allegato['allegato'],
-                'extra.userLink' => $request['link_profile']
+                'user_link' => $request['link_profile']
             ],
-            'id_allegato' => $allegato['id_allegato'],
+            'allegato_id' => $allegato['id_allegato'],
         ];
     }
 }
