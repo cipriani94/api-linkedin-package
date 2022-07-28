@@ -24,10 +24,12 @@ class LinkedinShareController extends Controller
     public function index(Request $request)
     {
         if ($request->has('code')) {
-            $attivita = DB::table('attivita')->where('id', session('attivitaId'))->first();
+            $attivita = \App\Attivita::find(session('attivitaId'));
+
             $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
-            $accessCode = LinkedinHelper::accessToken($request->code);
-            $dataProfile = LinkedinHelper::profileId($accessCode);
+            //$accessCode = LinkedinHelper::accessToken($request->code);
+            //$dataProfile = LinkedinHelper::profileId($accessCode);
+            dd($attivita);
             return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati, 'profile_id' => $dataProfile['id'], 'profile_name' => $dataProfile['name']]);
         }
         return redirect()->route('post.index')->with('error', 'Non sono riuscito a collegarmi a linkedin');
