@@ -18,15 +18,19 @@ class LinkedinShareController extends Controller
     public function getProfileId($id)
     {
         session(['attivitaId' => $id]);
+        \Log::info('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
         return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
     }
     public function index(Request $request)
     {
-        $attivita = DB::table('attivita')->where('id', session('attivitaId'))->first();
-        $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
-        $accessCode = LinkedinHelper::accessToken($request['code']);
-        $dataProfile = LinkedinHelper::profileId($accessCode);
-        return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati, 'profile_id' => $dataProfile['id'], 'profile_name' => $dataProfile['name']]);
+        if ($request->has('code')) {
+            $attivita = DB::table('attivita')->where('id', session('attivitaId'))->first();
+            $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
+            $accessCode = LinkedinHelper::accessToken($request->code);
+            $dataProfile = LinkedinHelper::profileId($accessCode);
+            return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati, 'profile_id' => $dataProfile['id'], 'profile_name' => $dataProfile['name']]);
+        }
+        return redirect()->route('post.index')->with('error', 'Non sono riuscito a collegarmi a linkedin');
     }
 
     public function store(Request $request)
