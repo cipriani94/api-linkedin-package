@@ -15,9 +15,9 @@ class LinkedinShareController extends Controller
     {
         $this->structureRequestSend = array();
     }
-    public function getProfileId($id)
+    public function getProfileId(Request $request)
     {
-        session(['attivitaId' => $id]);
+        session(['attivitaId' => $request->id]);
         \Log::info('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
         return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
     }
