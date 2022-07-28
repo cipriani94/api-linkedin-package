@@ -24,7 +24,7 @@ class LinkedinShareController extends Controller
     public function index(Request $request)
     {
         if ($request->has('code')) {
-            $attivita = \App\Attivita::find(session('attivitaId'));
+            $attivita = \App\Attivita::find(session('id_attivita'));
 
             $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
             //$accessCode = LinkedinHelper::accessToken($request->code);
