@@ -75,7 +75,23 @@ class LinkedinShareController extends Controller
             'body' => json_encode($this->structureRequestSend, true),
         ]);
         if (json_decode($response->getBody()->getContents(), true) == 'OK') {
-            return redirect()->route('post.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+            switch ($attivita->id_categoria) {
+                case 1:
+                    return redirect()->route('post.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    break;
+                case 2:
+                    return redirect()->route('biblioteca.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    break;
+                case 3:
+                    return redirect()->route('zoom.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    break;
+                case 4:
+                    return redirect()->route('presentazioni.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    break;
+                case 5:
+                    return redirect()->route('blog.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    break;
+            }
         }
         return redirect()->route('post.linkedin.getprofile', ['id' => $request->id])->with('error', 'Si è verificato un problema nella condivisione della richiesta contattare gli amministratori');
     }
