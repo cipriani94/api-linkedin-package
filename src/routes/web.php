@@ -8,3 +8,4 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
     Route::get('/post/get-profile-id', [LinkedinShareController::class, 'getProfileId'])->name('post.linkedin.getprofile');
 });
+Route::post('/linkedinapi/changestatus', [LinkedinApiShareController::class, 'changeStatus']);

@@ -41,22 +41,38 @@
                             </div>
 
                         </div>
-                        @if (empty($allegati))
-                            <p>Non ci sono immagini nel post</p>
-                        @else
-                            <div class="row">
-                                @foreach ($allegati as $image)
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <input type="radio" id="linkedin-image-{{ $image->id }}" name="image"
-                                                value="{{ $image->id }}">
-                                            <label for="linkedin-image-{{ $image->id }}">{{ $image->nome }}</label><br>
-                                            <img src="{{ asset(str_replace('public', 'storage', $image->path)) }}"
-                                                class="img-thumbnail" alt="">
+                        @if ($attivita->id_categoria != 3)
+                            @if (empty($allegati))
+                                <p>Non ci sono immagini nel post</p>
+                            @else
+                                <div class="row">
+                                    @foreach ($allegati as $image)
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <input type="radio" id="linkedin-image-{{ $image->id }}" name="image"
+                                                    value="{{ $image->id }}">
+                                                <label
+                                                    for="linkedin-image-{{ $image->id }}">{{ $image->nome }}</label><br>
+                                                <img src="{{ asset(str_replace('public', 'storage', $image->path)) }}"
+                                                    class="img-thumbnail" alt="">
+                                            </div>
                                         </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @else
+                            @if (empty($attivita->link_2))
+                                <p>Non ci sono immagini nel post</p>
+                            @else
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="radio" id="linkedin-image-{{ $attivita->id }}" name="image"
+                                            value="{{ $attivita->id }}">
+                                        <label for="linkedin-image-{{ $image->id }}">Locandina del meeting</label><br>
+                                        <img src="{{ asset($attivita->link_2) }}" class="img-thumbnail" alt="">
                                     </div>
-                                @endforeach
-                            </div>
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
