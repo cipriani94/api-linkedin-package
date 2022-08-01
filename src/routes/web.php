@@ -1,6 +1,7 @@
 <?php
 
 use Neurohub\Apilinkedin\Http\Controllers\LinkedinShareController;
+use Neurohub\Apilinkedin\Http\Controllers\LinkedinApiShareController;
 
 Route::group(['middleware' => ['web', 'auth']], function () {
     Route::get('/post/request/share', [LinkedinShareController::class, 'index'])->name('post.linkedin');
