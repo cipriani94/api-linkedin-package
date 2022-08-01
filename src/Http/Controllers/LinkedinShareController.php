@@ -20,7 +20,7 @@ class LinkedinShareController extends Controller
     public function getProfileId(Request $request)
     {
         session(['attivitaId' => $request->id_attivita]);
-        $attivita = \App\Attivita::find($request->attivita);
+        $attivita = \App\Attivita::find($request->id_attivita);
         if ($attivita->id_categoria == 3) {
             return redirect()->route('post.linkedin.store', ['category_id' => 3]);
         }
