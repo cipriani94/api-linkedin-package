@@ -68,7 +68,7 @@
                                     <div class="form-group">
                                         <input type="radio" id="linkedin-image-{{ $attivita->id }}" name="image"
                                             value="{{ $attivita->id }}">
-                                        <label for="linkedin-image-{{ $image->id }}">Locandina del meeting</label><br>
+                                        <label for="linkedin-image-{{ $attivita->id }}">Locandina del meeting</label><br>
                                         <img src="{{ asset($attivita->link_2) }}" class="img-thumbnail" alt="">
                                     </div>
                                 </div>
