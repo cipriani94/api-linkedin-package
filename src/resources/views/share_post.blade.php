@@ -17,10 +17,10 @@
     <div class="container">
         <div class="card-primary">
             <div class="card-header">
-                <h3 class="card-title">Richiesta di pubblicazione su linkedin del caso {{ $attivita->nome }} <br>
-                    <small>La richiesta verrà inviata agli amministratori di neurohub che controllerrano la corretteza dei
-                        dati richiesti e provvederanno alla pubblicazione del caso con il vostro tag associato al
-                        post.</small>
+                <h3 class="card-title">Richiesta di pubblicazione su linkedin del caso <strong> {{ $attivita->nome }}
+                    </strong> <br>
+                    <small>La richiesta verrà inviata agli amministratori di neurohub che controllerranno la correttezza
+                        dei dati e provvederanno alla promozione del caso con il vostro tag associato al post.</small>
                 </h3>
             </div>
             <form action="{{ route('post.linkedin.store') }}" method="post">
