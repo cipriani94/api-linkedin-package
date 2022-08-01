@@ -63,8 +63,12 @@ class LinkedinShareController extends Controller
         $attivita = \App\Attivita::find($request['id']);
 
         $allegato = null;
+        $image = '';
         if ($request->has('image')) {
             $allegato = $attivita->allegati->where('id', $request['image'])->first();
+            $image = $allegato->public_link;
+        } else if ($request->has('image_link')) {
+            $image = $request->image_link;
         }
         $this->setRequestBeforeSend(
             request()->all(),
@@ -74,7 +78,7 @@ class LinkedinShareController extends Controller
             ],
             [
                 'id_allegato' => $allegato->id ?? 0,
-                'allegato' => $allegato->public_link ?? ''
+                'allegato' => $image
             ]
         );
         $client = new Client(['base_uri' => config('apiservice.url')]);
