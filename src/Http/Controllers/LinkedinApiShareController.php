@@ -13,14 +13,14 @@ class LinkedinApiShareController extends Controller
     public function changeStatus(Request $request)
     {
         if (
-            request()->header('Authorization') == md5(config('apiservice.api_md5')) and request()->header('sourecehosting') == 'https://superadmin.neurohub.it/'
+            request()->header('Authorization') == md5(config('apiservice.api_md5_package')) and request()->header('sourecehosting') == 'https://superadmin.neurohub.it/'
             and $request->has('id_attivita') and $request->has('status')
         ) {
             $attivita = \App\Attivita::find($request->id_attivita);
             if (empty($attivita)) {
                 return json_encode('Activity not found');
             }
-            $attivita->status->linkedin = $request->status;
+            $attivita->status_linkedin = $request->status;
             $attivita->save();
             return json_encode('OK');
         }
