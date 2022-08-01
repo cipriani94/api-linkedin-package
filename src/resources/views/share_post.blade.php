@@ -26,8 +26,10 @@
             <form action="{{ route('post.linkedin.store') }}" method="post">
                 <div class="card-body">
                     @csrf
-                    <input type="hidden" name="profile_id" value="{{ $profile_id }}">
-                    <input type="hidden" name="profile_name" value="{{ $profile_name }}">
+                    @if (!$meeting)
+                        <input type="hidden" name="profile_id" value="{{ $profile_id }}">
+                        <input type="hidden" name="profile_name" value="{{ $profile_name }}">
+                    @endif
                     <input type="hidden" name="id" value="{{ $attivita->id }}">
                     <div class="card-body">
                         <div class="row">

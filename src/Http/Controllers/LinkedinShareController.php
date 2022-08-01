@@ -8,6 +8,8 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Neurohub\Apilinkedin\Classes\LinkedinHelper;
 
+use function PHPSTORM_META\registerArgumentsSet;
+
 class LinkedinShareController extends Controller
 {
     private $structureRequestSend;
@@ -18,20 +20,31 @@ class LinkedinShareController extends Controller
     public function getProfileId(Request $request)
     {
         session(['attivitaId' => $request->id_attivita]);
+        $attivita = \App\Attivita::find($request->attivita);
+        if ($attivita->id_categoria == 3) {
+            return redirect()->route('post.linkedin.store', ['category_id' => 3]);
+        }
         \Log::info('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
         return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
     }
     public function index(Request $request)
     {
-        if ($request->has('code')) {
-            if (session('attivitaId')) {
+        if ($request->has('code') or $request->has('category_id')) {
+            if (session('attivitaId') and !$request->has('category_id')) {
                 $attivita = \App\Attivita::find(session('attivitaId'));
-
-
                 $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
                 $accessCode = LinkedinHelper::accessToken($request->code);
                 $dataProfile = LinkedinHelper::profileId($accessCode);
-                return view('share_post::share_post', ['attivita' => $attivita, 'allegati' => $allegati, 'profile_id' => $dataProfile['id'], 'profile_name' => $dataProfile['name']]);
+                return view('share_post::share_post', [
+                    'attivita' => $attivita,
+                    'allegati' => $allegati,
+                    'profile_id' => $dataProfile['id'],
+                    'profile_name' => $dataProfile['name'],
+                    'meeting' => false
+                ]);
+            } else if (session('attivitaId') and $request->has('category_id')) {
+                $attivita = \App\Attivita::find(session('attivitaId'));
+                return view('share_post::share_post', ['attivita' => $attivita, 'meeting' => true]);
             }
             \Log::info('ERRORE SESSIONE PER PUBBLICARE POST LINKEDIN NON E STATO TROVATO L\'ID ATTIVTA');
         }
@@ -105,8 +118,8 @@ class LinkedinShareController extends Controller
                 'username' => $user['username'],
                 'email' => $user['email'],
                 'allegato' => $allegato['allegato'],
-                'profile_id' => $request['profile_id'],
-                'profile_name' => $request['profile_name']
+                'profile_id' => $request['profile_id'] ?? '',
+                'profile_name' => $request['profile_name'] ?? ''
             ],
             'allegato_id' => $allegato['id_allegato'],
         ];
