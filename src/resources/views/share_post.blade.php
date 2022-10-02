@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('style')
-    <!-- <link rel="stylesheet" href="https://joshuajohnson.co.uk/Choices/assets/styles/choices.min.css?version=7.0.0"> -->
-    <link rel="stylesheet" href="{{ asset('css/post.css?2') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" integrity="sha512-Velp0ebMKjcd9RiCoaHhLXkR1sFoCCWXNp6w4zj1hfMifYB5441C+sKeBl/T/Ka6NjBiRfBBQRaQq65ekYz3UQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
-
-@section('content')
+@section('container_page')
 
     @if (session('error'))
         <div class="alert alert-danger" style="text-align: center">
@@ -80,7 +78,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Invia la richiesta di pubblicazione</button>
-                    <a href="{{ route('post.index') }}" class="btn btn-danger">Annulla la pubblicazione</a>
+                    <a href="{{ route('casiclinici') }}" class="btn btn-danger">Annulla la pubblicazione</a>
                 </div>
             </form>
         </div>

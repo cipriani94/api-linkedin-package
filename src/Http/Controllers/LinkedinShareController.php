@@ -48,7 +48,7 @@ class LinkedinShareController extends Controller
             }
             \Log::info('ERRORE SESSIONE PER PUBBLICARE POST LINKEDIN NON E STATO TROVATO L\'ID ATTIVTA');
         }
-        return redirect()->route('post.index')->with('error', 'Non sono riuscito a collegarmi a linkedin');
+        return redirect()->route('casiclinici')->with('error', 'Non sono riuscito a collegarmi a linkedin');
     }
 
     public function store(Request $request)
@@ -94,19 +94,19 @@ class LinkedinShareController extends Controller
         if (json_decode($response->getBody()->getContents(), true) == 'OK') {
             switch ($attivita->id_categoria) {
                 case 1:
-                    return redirect()->route('post.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    return redirect()->route('casiclinici')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 2:
-                    return redirect()->route('biblioteca.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    return redirect()->route('biblioteca')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 3:
-                    return redirect()->route('zoom.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    return redirect()->route('meeting')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 4:
                     return redirect()->route('presentazioni.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 5:
-                    return redirect()->route('blog.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    return redirect()->route('presentazione')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
             }
         }
