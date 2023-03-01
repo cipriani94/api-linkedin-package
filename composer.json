@@ -13,6 +13,6 @@
             "name": "Enrico Cipriani"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "1.0",
     "require" : {}
 }
