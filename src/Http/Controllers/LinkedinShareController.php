@@ -13,10 +13,12 @@ use function PHPSTORM_META\registerArgumentsSet;
 class LinkedinShareController extends Controller
 {
     private $structureRequestSend;
+
     public function __construct()
     {
         $this->structureRequestSend = array();
     }
+
     public function getProfileId(Request $request)
     {
         session(['attivitaId' => $request->id_attivita]);
@@ -27,27 +29,29 @@ class LinkedinShareController extends Controller
         \Log::info('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
         return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
     }
+
     public function index(Request $request)
     {
-        if ($request->has('code') or $request->has('category_id')) {
-            if (session('attivitaId') and !$request->has('category_id')) {
-                $attivita = \App\Attivita::find(session('attivitaId'));
-                $allegati = DB::table('allegati')->where('id_attivita', session('attivitaId'))->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
-                $accessCode = LinkedinHelper::accessToken($request->code);
-                $dataProfile = LinkedinHelper::profileId($accessCode);
-                return view('share_post::share_post', [
-                    'attivita' => $attivita,
-                    'allegati' => $allegati,
-                    'profile_id' => $dataProfile['id'],
-                    'profile_name' => $dataProfile['name'],
-                    'meeting' => false
-                ]);
-            } else if (session('attivitaId') and $request->has('category_id')) {
-                $attivita = \App\Attivita::find(session('attivitaId'));
-                return view('share_post::share_post', ['attivita' => $attivita, 'meeting' => true]);
-            }
-            \Log::info('ERRORE SESSIONE PER PUBBLICARE POST LINKEDIN NON E STATO TROVATO L\'ID ATTIVTA');
+
+        if ($request->has('id') and $request->has('code'))
+        {
+            $attivita = \App\Attivita::find($request->id);
+            $allegati = DB::table('allegati')->where('id_attivita', $request->id)->whereIn('tipo_file', ['jpeg', 'jpg', 'png'])->get();
+            $accessCode = LinkedinHelper::accessToken($request->code);
+            $dataProfile = LinkedinHelper::profileId($accessCode);
+            return view('share_post::share_post', [
+                'attivita' => $attivita,
+                'allegati' => $allegati,
+                'profile_id' => $dataProfile['id'],
+                'profile_name' => $dataProfile['name'],
+                'meeting' => false
+            ]);
+        } else if ($request->has('id'))
+        {
+            $attivita = \App\Attivita::find($request->id);
+            return view('share_post::share_post', ['attivita' => $attivita, 'meeting' => true]);
         }
+        \Log::info('ERRORE SESSIONE PER PUBBLICARE POST LINKEDIN NON E STATO TROVATO L\'ID ATTIVTA');
         return redirect()->route('casiclinici')->with('error', 'Non sono riuscito a collegarmi a linkedin');
     }
 
@@ -85,7 +89,7 @@ class LinkedinShareController extends Controller
         $response = $client->request('POST', '/api/createRequestShare', [
             'headers' => [
                 "Authorization" => config('apiservice.api_md5'),
-                "Content-Type"  => "application/json",
+                "Content-Type" => "application/json",
                 '_token' => csrf_token(),
                 "sourcehosting" => config('app.url')
             ],
@@ -103,7 +107,7 @@ class LinkedinShareController extends Controller
                     return redirect()->route('meeting')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 4:
-                    return redirect()->route('presentazioni.index')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
+                    return redirect()->route('presentazioni')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
                     break;
                 case 5:
                     return redirect()->route('presentazione')->with('status', 'Richiesta di pubblicazione inviata correttamente! Ti aggiorneremo appena verrà pubblicata');
