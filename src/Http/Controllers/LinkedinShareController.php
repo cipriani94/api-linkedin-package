@@ -24,7 +24,7 @@ class LinkedinShareController extends Controller
         session(['attivitaId' => $request->id_attivita]);
         $attivita = \App\Attivita::find($request->id_attivita);
         if ($attivita->id_categoria == 3) {
-            return redirect()->route('post.linkedin.store', ['category_id' => 3]);
+            return redirect()->route('post.linkedin.store', ['category_id' => 3,'id'=>$attivita->id]);
         }
         \Log::info('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
         return redirect('https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=' . config('linkedinsharecontent.client_id') . '&redirect_uri=' . config('linkedinsharecontent.redirect_uri') . '&scope=' . config('linkedinsharecontent.scopes'));
